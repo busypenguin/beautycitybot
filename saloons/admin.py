@@ -13,7 +13,13 @@ class Administrator(admin.ModelAdmin):
     inlines = [SaloonInline]
 
 
-admin.site.register(Service)
+@admin.register(Service)
+class Administrator(admin.ModelAdmin):
+    list_display = ('name', 'price', 'duration', )
+    search_fields = ('name', )
+    ordering = ('price', )
+
+
 admin.site.register(Saloon)
 admin.site.register(Master)
 admin.site.register(Sign)

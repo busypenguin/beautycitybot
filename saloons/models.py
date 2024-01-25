@@ -56,6 +56,15 @@ class Service(models.Model):
     """Услуга."""
     name = models.CharField(
         max_length=100,
+        unique=True,
+    )
+    duration = models.DurationField(
+        null=True,
+        blank=True,
+    )
+    price = models.IntegerField(
+        null=True,
+        blank=True,
     )
 
     class Meta:
