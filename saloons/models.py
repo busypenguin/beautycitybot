@@ -145,6 +145,7 @@ class Sign(models.Model):
         on_delete=models.CASCADE,
         related_name='client_signs'
     )
+    date = models.DateField()
     start = models.TimeField()
     end = models.TimeField()
 
