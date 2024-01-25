@@ -1,12 +1,51 @@
 from django.db import models
-from django.contrib.auth import get_user_model
 
-User = get_user_model()
+
+class Client(models.Model):
+    """Клиент."""
+    username = models.CharField(
+        max_length=50,
+        unique=True,
+    )
+    first_name = models.CharField(
+        max_length=50,
+        blank=True,
+    )
+    phone_number = models.CharField(
+        max_length=12,
+    )
+
+    class Meta:
+        verbose_name = 'Клиент'
+        verbose_name_plural = 'Клиенты'
+        ordering = ('username',)
+
+    def __str__(self):
+        return self.username
+
+
+class Administrator(models.Model):
+    """Администратор."""
+    first_name = models.CharField(
+        max_length=50,
+    )
+    last_name = models.CharField(
+        max_length=50,
+    )
+
+    class Meta:
+        verbose_name = 'Администратор'
+        verbose_name_plural = 'Администраторы'
+
+    def __str__(self):
+        return f'{self.first_name} {self.first_name}'
+
+    def display_saloon(self):
+        return f'{self.saloon}'
 
 
 class Service(models.Model):
     """Услуга."""
-
     name = models.CharField(
         max_length=100,
     )
@@ -22,16 +61,15 @@ class Service(models.Model):
 
 class Saloon(models.Model):
     """Салон красоты."""
-
     name = models.CharField(
         max_length=100,
     )
-    owner = models.ForeignKey(
-        User,
+    admininstrator = models.OneToOneField(
+        Administrator,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='saloons',
+        related_name='saloon',
     )
     services = models.ManyToManyField(
         Service,
@@ -50,7 +88,6 @@ class Saloon(models.Model):
 
 class Master(models.Model):
     """Мастер."""
-
     name = models.CharField(
         max_length=100,
     )
@@ -76,7 +113,6 @@ class Master(models.Model):
 
 class Sign(models.Model):
     """Запись."""
-
     saloon = models.ForeignKey(
         Saloon,
         on_delete=models.CASCADE,
@@ -88,7 +124,7 @@ class Sign(models.Model):
         related_name='master_signs'
     )
     client = models.ForeignKey(
-        User,
+        Client,
         on_delete=models.CASCADE,
         related_name='client_signs'
     )
