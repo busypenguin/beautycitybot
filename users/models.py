@@ -15,7 +15,6 @@ class User(AbstractUser):
     phone_number = models.CharField(
         max_length=20,
     )
-    is_owner = models.BooleanField()
 
     class Meta:
         verbose_name = 'Пользователь'

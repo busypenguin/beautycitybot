@@ -30,6 +30,7 @@ class Saloon(models.Model):
         User,
         on_delete=models.SET_NULL,
         null=True,
+        blank=True,
         related_name='saloons',
     )
     services = models.ManyToManyField(
@@ -37,6 +38,14 @@ class Saloon(models.Model):
         related_name='saloons',
         blank=True,
     )
+
+    class Meta:
+        verbose_name = 'Салон'
+        verbose_name_plural = 'Салоны'
+        ordering = ('name',)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Master(models.Model):
@@ -52,9 +61,17 @@ class Master(models.Model):
     )
     saloons = models.ManyToManyField(
         Service,
-        related_name='masters',
+        related_name='saloon_masters',
         blank=True,
     )
+
+    class Meta:
+        verbose_name = 'Мастер'
+        verbose_name_plural = 'Мастера'
+        ordering = ('name',)
+
+    def __str__(self) -> str:
+        return self.name
 
 
 class Sign(models.Model):
@@ -63,16 +80,28 @@ class Sign(models.Model):
     saloon = models.ForeignKey(
         Saloon,
         on_delete=models.CASCADE,
-        related_name='signs'
+        related_name='saloon_signs'
     )
     master = models.ForeignKey(
         Master,
         on_delete=models.CASCADE,
-        related_name='signs'
+        related_name='master_signs'
     )
     client = models.ForeignKey(
-        Saloon,
+        User,
         on_delete=models.CASCADE,
-        related_name='signs'
+        related_name='client_signs'
     )
-    time = models.TimeField()
+    start = models.TimeField()
+    end = models.TimeField()
+
+    class Meta:
+        verbose_name = 'Запись'
+        verbose_name_plural = 'Записи'
+        ordering = ('start',)
+
+    def __str__(self) -> str:
+        return (
+            f'{self.client} записан в салон {self.saloon}'
+            f' к мастеру {self.master}'
+        )
