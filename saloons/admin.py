@@ -9,7 +9,7 @@ class SaloonInline(admin.TabularInline):
 
 @admin.register(Administrator)
 class Administrator(admin.ModelAdmin):
-    list_display = ('first_name', 'last_name', 'display_saloon')
+    list_display = ('first_name', 'last_name', 'display_saloon', 'orders',)
     inlines = [SaloonInline]
 
 

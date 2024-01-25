@@ -32,6 +32,9 @@ class Administrator(models.Model):
     last_name = models.CharField(
         max_length=50,
     )
+    orders = models.IntegerField(
+        default=0,
+    )
 
     class Meta:
         verbose_name = 'Администратор'
@@ -41,7 +44,12 @@ class Administrator(models.Model):
         return f'{self.first_name} {self.first_name}'
 
     def display_saloon(self):
+        """Вывести название салона в котором работает администратор."""
         return f'{self.saloon}'
+
+    def add_order(self):
+        """Засчитать администратору обработанный заказ."""
+        self.orders += 1
 
 
 class Service(models.Model):
