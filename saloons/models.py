@@ -114,7 +114,7 @@ class Master(models.Model):
         blank=True,
     )
     saloons = models.ManyToManyField(
-        Service,
+        Saloon,
         related_name='saloon_masters',
         blank=True,
     )
