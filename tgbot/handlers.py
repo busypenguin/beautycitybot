@@ -101,10 +101,18 @@ def pdconsent_refuse(update, context):
 def show_locations(update, context):
     """Вывести список салонов."""
     saloons = Saloon.objects.all()
+    keyboard = []
+    for saloon in saloons:
+        keyboard.append(
+            InlineKeyboardButton(
+                saloon.name,
+                callback_data=saloon.name
+            )
+        )
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="Список салонов:"
-        
+        text="Список салонов:",
+        reply_markup=InlineKeyboardMarkup([keyboard])
     )
 
 

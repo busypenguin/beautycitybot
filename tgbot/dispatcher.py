@@ -1,5 +1,5 @@
 from telegram.ext import CommandHandler, CallbackQueryHandler
-import handlers
+from . import handlers
 
 
 def setup_dispatcher(dp):
