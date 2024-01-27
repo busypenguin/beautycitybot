@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from saloons.models import Master, Saloon
+from saloons.models import Master, Saloon, Service
 
 
 def callback_handler(update, context):
@@ -102,15 +102,15 @@ def show_locations(update, context):
     """Вывести список салонов."""
     saloons = Saloon.objects.all()
     keyboard = [
-        InlineKeyboardButton(
+        [InlineKeyboardButton(
             saloon.name,
             callback_data=saloon.name
-        ) for saloon in saloons
+        )] for saloon in saloons
     ]
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Список салонов:",
-        reply_markup=InlineKeyboardMarkup([keyboard])
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
@@ -119,21 +119,33 @@ def show_masters(update, context):
     """Вывести список мастеров."""
     masters = Master.objects.all()
     keyboard = [
-        InlineKeyboardButton(
+        [InlineKeyboardButton(
             master.name,
             callback_data=master.name
-        ) for master in masters
+        )] for master in masters
     ]
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Наши мастера:",
-        reply_markup=InlineKeyboardMarkup([keyboard])
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
 # services
 def show_services(update, context):
-    update.message.reply_text("Наши услуги:")
+    """Вывести список услуг."""
+    services = Service.objects.all()
+    keyboard = [
+        [InlineKeyboardButton(
+            service.name,
+            callback_data=service.name
+        )] for service in services
+    ]
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Наши услуги:",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
 
 # prices
