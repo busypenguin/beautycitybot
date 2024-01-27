@@ -1,6 +1,6 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from saloons.models import Saloon
+from saloons.models import Master, Saloon
 
 
 def callback_handler(update, context):
@@ -101,14 +101,12 @@ def pdconsent_refuse(update, context):
 def show_locations(update, context):
     """Вывести список салонов."""
     saloons = Saloon.objects.all()
-    keyboard = []
-    for saloon in saloons:
-        keyboard.append(
-            InlineKeyboardButton(
-                saloon.name,
-                callback_data=saloon.name
-            )
-        )
+    keyboard = [
+        InlineKeyboardButton(
+            saloon.name,
+            callback_data=saloon.name
+        ) for saloon in saloons
+    ]
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Список салонов:",
@@ -118,7 +116,19 @@ def show_locations(update, context):
 
 # masters
 def show_masters(update, context):
-    update.message.reply_text("Наши мастера:")
+    """Вывести список мастеров."""
+    masters = Master.objects.all()
+    keyboard = [
+        InlineKeyboardButton(
+            master.name,
+            callback_data=master.name
+        ) for master in masters
+    ]
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Наши мастера:",
+        reply_markup=InlineKeyboardMarkup([keyboard])
+    )
 
 
 # services
