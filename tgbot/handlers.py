@@ -17,6 +17,17 @@ def callback_handler(update, context):
     COMMANDS[update.callback_query.data](update, context)
 
 
+def create_keyboard(queryset):
+    """Создает вертикальную клавиатуру с наименованиями объектов из Queryset"""
+    keyboard = [
+        [InlineKeyboardButton(
+            item.name,
+            callback_data=item.name
+        )] for item in queryset
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+
 # start
 def start_callback(update, context):
     """Стартовый вопрос."""
@@ -58,7 +69,7 @@ def use_bot(update, context):
             ),
             InlineKeyboardButton(
                 "❌",
-                callback_data='use_call'
+                callback_data='pdconsent_refuse'
             ),
         ]])
     )
@@ -101,16 +112,10 @@ def pdconsent_refuse(update, context):
 def show_locations(update, context):
     """Вывести список салонов."""
     saloons = Saloon.objects.all()
-    keyboard = [
-        [InlineKeyboardButton(
-            saloon.name,
-            callback_data=saloon.name
-        )] for saloon in saloons
-    ]
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Список салонов:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=create_keyboard(saloons)
     )
 
 
@@ -118,16 +123,10 @@ def show_locations(update, context):
 def show_masters(update, context):
     """Вывести список мастеров."""
     masters = Master.objects.all()
-    keyboard = [
-        [InlineKeyboardButton(
-            master.name,
-            callback_data=master.name
-        )] for master in masters
-    ]
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Наши мастера:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=create_keyboard(masters)
     )
 
 
@@ -135,16 +134,10 @@ def show_masters(update, context):
 def show_services(update, context):
     """Вывести список услуг."""
     services = Service.objects.all()
-    keyboard = [
-        [InlineKeyboardButton(
-            service.name,
-            callback_data=service.name
-        )] for service in services
-    ]
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Наши услуги:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=create_keyboard(services)
     )
 
 
