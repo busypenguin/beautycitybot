@@ -1,35 +1,111 @@
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+from saloons.models import Saloon
+
+
+def callback_handler(update, context):
+    """Запуск команд отловленных CallbackQueryHandler-ом."""
+    COMMANDS = {
+        'use_call': use_call,
+        'use_bot': use_bot,
+        'ask_pdconsent': ask_pdconsent,
+        'pdconsent_refuse': pdconsent_refuse,
+        'show_locations': show_locations,
+        'show_masters': show_masters,
+        'show_services': show_services,
+    }
+    COMMANDS[update.callback_query.data](update, context)
+
+
 # start
 def start_callback(update, context):
-    update.message.reply_text("Добро пожаловать в салон BeautyCity!\n" +
-                              "Чтобы записаться на процедуру через бота нажми /use_bot\n" +
-                              "Чтобы записаться на процедуру через менеджера /use_call")
+    """Стартовый вопрос."""
+    update.message.reply_text(
+        "Добро пожаловать в салон BeautyCity!\n" +
+        "Выберите как вы хотите записаться на процедуру.",
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton(
+                "В боте 🤖",
+                callback_data="use_bot"
+            ),
+            InlineKeyboardButton(
+                "Через менеджера ☎️",
+                callback_data='use_call'
+            ),
+        ]])
+    )
 
 
 # usage
 def use_call(update, context):
-    update.message.reply_text(
-        "Запишитесь на процедуру у нашего менеджера по номеру +79371234567")
+    """Вывести контакты менеджера."""
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=("Запишитесь на процедуру у нашего менеджера по номеру"
+              "+79371234567")
+    )
 
 
 def use_bot(update, context):
-    update.message.reply_text("")
+    """Вывести вопрос о согласии обработки персональных данных."""
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Подтвердите согласие на обработку персональных данных",
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton(
+                "✅",
+                callback_data="ask_pdconsent"
+            ),
+            InlineKeyboardButton(
+                "❌",
+                callback_data='use_call'
+            ),
+        ]])
+    )
 
 
 def ask_pdconsent(update, context):
-    update.message.reply_text(
-        "Сервис запрашивает согласие на обработку персональных данных")
+    """Отправить типовое согласие на обработку персональных данных."""
     doc_path = r'./assets/Согласие на обработку персональных данных.pdf'
     with open(doc_path, 'rb') as f:
         context.bot.sendDocument(chat_id=update.effective_chat.id, document=f)
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Выберите вариант поиска",
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton(
+                "По салону",
+                callback_data="show_locations"
+            ),
+            InlineKeyboardButton(
+                "По мастеру",
+                callback_data='show_masters'
+            ),
+            InlineKeyboardButton(
+                "По услуге",
+                callback_data='show_services'
+            ),
+        ]])
+    )
 
 
 def pdconsent_refuse(update, context):
-    update.message.reply_text("Досвидания")
+    """Попрощаться после отказа предоставления персональных данных."""
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Досвидания"
+    )
 
 
 # location
 def show_locations(update, context):
-    update.message.reply_text("Адреса салонов:")
+    """Вывести список салонов."""
+    saloons = Saloon.objects.all()
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Список салонов:"
+        
+    )
 
 
 # masters

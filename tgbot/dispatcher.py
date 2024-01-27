@@ -1,11 +1,10 @@
-from telegram.ext import CommandHandler
-from . import handlers
+from telegram.ext import CommandHandler, CallbackQueryHandler
+import handlers
 
 
 def setup_dispatcher(dp):
     # start
     dp.add_handler(CommandHandler("start", handlers.start_callback))
-
     # usage
     dp.add_handler(CommandHandler("use_call", handlers.use_call))
     dp.add_handler(CommandHandler("use_bot", handlers.use_bot))
@@ -34,5 +33,8 @@ def setup_dispatcher(dp):
         "ask_phone_number", handlers.ask_phone_number))
     dp.add_handler(CommandHandler(
         "registration_success", handlers.registration_success))
+
+    # callback
+    dp.add_handler(CallbackQueryHandler(handlers.callback_handler))
 
     return dp
