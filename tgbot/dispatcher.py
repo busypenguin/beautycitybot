@@ -22,7 +22,7 @@ def setup_dispatcher(dp):
     dp.add_handler(CommandHandler("show_services", handlers.show_services))
 
     # prices
-    dp.add_handler(CommandHandler("show_prices", handlers.show_prices))
+    dp.add_handler(CommandHandler("show_price", handlers.show_price))
 
     # date and time
     dp.add_handler(CommandHandler("show_days", handlers.show_days))
@@ -34,7 +34,13 @@ def setup_dispatcher(dp):
     dp.add_handler(CommandHandler(
         "registration_success", handlers.registration_success))
 
-    # callback
+    # show_saloon_services callback
+    dp.add_handler(CallbackQueryHandler(
+        handlers.show_saloon_services,
+        pattern=r'^show_saloon_services\s[0-9]+',
+    ))
+
+    # any callback
     dp.add_handler(CallbackQueryHandler(handlers.callback_handler))
 
     return dp

@@ -112,10 +112,16 @@ def pdconsent_refuse(update, context):
 def show_locations(update, context):
     """Вывести список салонов."""
     saloons = Saloon.objects.all()
+    keyboard = [
+        [InlineKeyboardButton(
+            saloon.name,
+            callback_data=f'show_saloon_services {saloon.id}'
+        )] for saloon in saloons
+    ]
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Список салонов:",
-        reply_markup=create_keyboard(saloons)
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 
@@ -141,8 +147,25 @@ def show_services(update, context):
     )
 
 
+def show_saloon_services(update, context):
+    """Показать услуги доступные в салоне."""
+    saloon_id = update.callback_query.data.split()[1]
+    saloon_services = Service.objects.filter(saloons=saloon_id)
+    keyboard = [
+        [InlineKeyboardButton(
+            service.name,
+            callback_data=f'show_price {service.id}'
+        )] for service in saloon_services
+    ]
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=f"Услуги салона {Saloon.objects.get(id=saloon_id)}:",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
 # prices
-def show_prices(update, context):
+def show_price(update, context):
     update.message.reply_text("Цены на услуги:")
 
 
