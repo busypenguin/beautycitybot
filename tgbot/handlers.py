@@ -13,6 +13,7 @@ def callback_handler(update, context):
         'show_locations': show_locations,
         'show_masters': show_masters,
         'show_services': show_services,
+        'show_prices': show_prices,
     }
     COMMANDS[update.callback_query.data](update, context)
 
@@ -177,7 +178,28 @@ def show_saloon_services(update, context):
 
 # prices
 def show_prices(update, context):
-    update.message.reply_text("Цены на услуги:")
+    """Показать цены на все услуги сети."""
+    services = Service.objects.all()
+    price_list = '\n'.join(
+        f'{service.name} - {service.price}р.' for service in services)
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Цены на наши услуги:\n" + price_list,
+        reply_markup=InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton(
+                        "Выбрать услугу",
+                        callback_data="show_services"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "Позвонить менеджеру ☎️",
+                        callback_data='use_call'
+                    ),
+                ]
+            ]))
 
 
 # date and time
