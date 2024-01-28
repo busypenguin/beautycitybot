@@ -22,7 +22,7 @@ def setup_dispatcher(dp):
     dp.add_handler(CommandHandler("show_services", handlers.show_services))
 
     # prices
-    dp.add_handler(CommandHandler("show_price", handlers.show_price))
+    dp.add_handler(CommandHandler("show_prices", handlers.show_prices))
 
     # date and time
     dp.add_handler(CommandHandler("show_days", handlers.show_days))
