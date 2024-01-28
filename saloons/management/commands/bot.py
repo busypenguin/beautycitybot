@@ -9,7 +9,7 @@ from tgbot.dispatcher import setup_dispatcher
 def run_polling(telegram_api_key):
     """ Run bot in polling mode """
 
-    updater = Updater(token=telegram_api_key)
+    updater = Updater(token=telegram_api_key, use_context=True)
     dispatcher = updater.dispatcher
     dispatcher = setup_dispatcher(dispatcher)
     print("Polling of bot has started")

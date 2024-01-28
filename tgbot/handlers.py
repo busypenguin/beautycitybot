@@ -82,6 +82,9 @@ def use_call(update, context):
 
 def use_bot(update, context):
     """Вывести вопрос о согласии обработки персональных данных."""
+    doc_path = r'./assets/Согласие на обработку персональных данных.pdf'
+    with open(doc_path, 'rb') as f:
+        context.bot.sendDocument(chat_id=update.effective_chat.id, document=f)
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Подтвердите согласие на обработку персональных данных",
@@ -99,10 +102,7 @@ def use_bot(update, context):
 
 
 def ask_pdconsent(update, context):
-    """Отправить типовое согласие на обработку персональных данных."""
-    doc_path = r'./assets/Согласие на обработку персональных данных.pdf'
-    with open(doc_path, 'rb') as f:
-        context.bot.sendDocument(chat_id=update.effective_chat.id, document=f)
+    """Вывести вопрос о вариантах поиска."""
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Выберите вариант поиска",
@@ -127,7 +127,7 @@ def pdconsent_refuse(update, context):
     """Попрощаться после отказа предоставления персональных данных."""
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="Досвидания"
+        text="К сожалению, без согласия нельзя продолжить запись через бота."
     )
 
 
@@ -143,7 +143,7 @@ def show_locations(update, context):
     ]
     context.bot.send_message(
         chat_id=update.effective_chat.id,
-        text="Список салонов:",
+        text="Наши салоны:",
         reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
