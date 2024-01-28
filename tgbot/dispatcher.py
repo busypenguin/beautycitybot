@@ -13,7 +13,8 @@ def setup_dispatcher(dp):
     # usage
     dp.add_handler(CommandHandler("use_call", handlers.use_call))
     dp.add_handler(CommandHandler("use_bot", handlers.use_bot))
-    dp.add_handler(CommandHandler("ask_pdconsent", handlers.ask_pdconsent))
+    dp.add_handler(CommandHandler(
+        "pdconsent_agreed", handlers.pdconsent_agreed))
     dp.add_handler(CommandHandler(
         "pdconsent_refuse", handlers.pdconsent_refuse))
 

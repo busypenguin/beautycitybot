@@ -9,7 +9,7 @@ def callback_handler(update, context):
     COMMANDS = {
         'use_call': use_call,
         'use_bot': use_bot,
-        'ask_pdconsent': ask_pdconsent,
+        'pdconsent_agreed': pdconsent_agreed,
         'pdconsent_refuse': pdconsent_refuse,
         'show_locations': show_locations,
         'show_masters': show_masters,
@@ -50,9 +50,9 @@ def start_callback(update, context):
     }
 
     Client.objects.get_or_create(
-            username=client_choices['username'],
-            first_name=client_choices['first_name'],
-        )
+        username=client_choices['username'],
+        first_name=client_choices['first_name'],
+    )
     # new_client.save()
     update.message.reply_text(
         "Добро пожаловать в салон BeautyCity!\n" +
@@ -68,6 +68,22 @@ def start_callback(update, context):
             ),
         ]])
     )
+
+
+def start_again(update, context):
+    update.callback_query.message.reply_text(
+        "Добро пожаловать в салон BeautyCity!\n" +
+        "Выберите как вы хотите записаться на процедуру.",
+        reply_markup=InlineKeyboardMarkup([[
+            InlineKeyboardButton(
+                "В боте 🤖",
+                callback_data="use_bot"
+            ),
+            InlineKeyboardButton(
+                "Через менеджера ☎️",
+                callback_data='use_call'
+            ),
+        ]]))
 
 
 # usage
@@ -91,7 +107,7 @@ def use_bot(update, context):
         reply_markup=InlineKeyboardMarkup([[
             InlineKeyboardButton(
                 "✅",
-                callback_data="ask_pdconsent"
+                callback_data="pdconsent_agreed"
             ),
             InlineKeyboardButton(
                 "❌",
@@ -101,7 +117,7 @@ def use_bot(update, context):
     )
 
 
-def ask_pdconsent(update, context):
+def pdconsent_agreed(update, context):
     """Вывести вопрос о вариантах поиска."""
     context.bot.send_message(
         chat_id=update.effective_chat.id,
@@ -129,6 +145,7 @@ def pdconsent_refuse(update, context):
         chat_id=update.effective_chat.id,
         text="К сожалению, без согласия нельзя продолжить запись через бота."
     )
+    start_again(update, context)
 
 
 # location
@@ -332,3 +349,4 @@ def registration_success(update, context):
         chat_id=update.effective_chat.id,
         text="Вы успешно записаны на процедуру!",
     )
+    start_again(update, context)
