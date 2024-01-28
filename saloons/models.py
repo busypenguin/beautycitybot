@@ -142,6 +142,11 @@ class Sign(models.Model):
         blank=True,
         null=True,
     )
+    service = models.ForeignKey(
+        Service,
+        on_delete=models.CASCADE,
+        related_name='signs',
+    )
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
@@ -166,3 +171,7 @@ class Sign(models.Model):
             f'{self.client} записан в салон {self.saloon}'
             f' к мастеру {self.master}'
         )
+
+    def get_end_time(self):
+        """Получить время окончания процедуры."""
+        return self.time + self.service.duration

@@ -234,7 +234,7 @@ def show_master_services_in_saloon(update, context):
     keyboard = [
         [InlineKeyboardButton(
             service.name,
-            callback_data='show_days'
+            callback_data=f'show_days {service.id}'
         )] for service in services
     ]
     context.bot.send_message(
@@ -273,6 +273,8 @@ def show_prices(update, context):
 
 # date and time
 def show_days(update, context):
+    service_id = update.callback_query.data.split()[1]
+    client_choices['service_id'] = service_id
     today = datetime.today()
     next_two_weeks = [today + timedelta(days=1) * i for i in range(14)]
     keyboard = [
@@ -318,9 +320,11 @@ def registration_success(update, context):
     Client.objects.filter(
         username=client_choices['username']
     ).update(phone_number=client_choices['phone_number'])
+    print(client_choices)
     new_sign = Sign.objects.create(
         saloon=Saloon.objects.get(id=client_choices['saloon_id']),
         master=Master.objects.get(id=client_choices['master_id']),
+        service=Service.objects.get(id=client_choices['service_id']),
         client=current_user,
     )
     new_sign.save()
