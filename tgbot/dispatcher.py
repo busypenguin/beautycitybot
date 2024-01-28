@@ -40,6 +40,12 @@ def setup_dispatcher(dp):
         pattern=r'^show_saloon_services\s[0-9]+',
     ))
 
+    # show_master_saloons callback
+    dp.add_handler(CallbackQueryHandler(
+        handlers.show_master_saloons,
+        pattern=r'^show_master_saloons\s[0-9]+',
+    ))
+
     # any callback
     dp.add_handler(CallbackQueryHandler(handlers.callback_handler))
 

@@ -122,7 +122,7 @@ def show_locations(update, context):
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Список салонов:",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
 
@@ -130,10 +130,16 @@ def show_locations(update, context):
 def show_masters(update, context):
     """Вывести список мастеров."""
     masters = Master.objects.all()
+    keyboard = [
+        [InlineKeyboardButton(
+            master.name,
+            callback_data=f'show_master_saloons {master.id}'
+        )] for master in masters
+    ]
     context.bot.send_message(
         chat_id=update.effective_chat.id,
         text="Наши мастера:",
-        reply_markup=create_keyboard(masters)
+        reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
 
@@ -172,6 +178,24 @@ def show_saloon_services(update, context):
         chat_id=update.effective_chat.id,
         text=f'Услуги салона {Saloon.objects.get(id=saloon_id)}:\n' +
              f'{price_list}',
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+def show_master_saloons(update, context):
+    """Показать салоны в которых работает мастер."""
+    master_id = update.callback_query.data.split()[1]
+    master_saloons = Saloon.objects.filter(saloon_masters=master_id)
+    keyboard = [
+        [InlineKeyboardButton(
+            saloon.name,
+            callback_data=f'show_master_services_in_saloon {master_id} '
+                          f'{saloon.id}'
+        )] for saloon in master_saloons
+    ]
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=f'{Master.objects.get(id=master_id)} работает в салонах:',
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
