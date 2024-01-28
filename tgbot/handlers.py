@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, time, timedelta
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
 from saloons.models import Master, Saloon, Service
@@ -16,6 +16,7 @@ def callback_handler(update, context):
         'show_services': show_services,
         'show_prices': show_prices,
         'show_days': show_days,
+        'show_hours': show_hours,
     }
     COMMANDS[update.callback_query.data](update, context)
 
@@ -254,7 +255,7 @@ def show_days(update, context):
     keyboard = [
         [InlineKeyboardButton(
             day.strftime("%d.%m"),
-            callback_data=f'show_hours {day.day} {day.month}'
+            callback_data='show_hours'  # f' {day.day} {day.month}' add later
         )] for day in next_two_weeks
     ]
     context.bot.send_message(
@@ -265,7 +266,19 @@ def show_days(update, context):
 
 
 def show_hours(update, context):
-    update.message.reply_text("Выберите время:")
+    hours = [time(i) for i in range(9, 22)]
+    keyboard = [
+        [InlineKeyboardButton(
+            (f'{hour.strftime("%H:%M")}-'
+             f'{time(hour.hour + 1).strftime("%H:%M")}'),
+            callback_data='ask_phone_number'  # f' {hour.hour}' add later
+        )] for hour in hours
+    ]
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Выберите время:",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
 
 
 # registration
