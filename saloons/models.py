@@ -114,7 +114,7 @@ class Master(models.Model):
         blank=True,
     )
     saloons = models.ManyToManyField(
-        Service,
+        Saloon,
         related_name='saloon_masters',
         blank=True,
     )
@@ -138,21 +138,28 @@ class Sign(models.Model):
     master = models.ForeignKey(
         Master,
         on_delete=models.CASCADE,
-        related_name='master_signs'
+        related_name='master_signs',
+        blank=True,
+        null=True,
     )
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
         related_name='client_signs'
     )
-    date = models.DateField()
-    start = models.TimeField()
-    end = models.TimeField()
+    date = models.DateField(
+        blank=True,
+        null=True,
+    )
+    time = models.TimeField(
+        blank=True,
+        null=True,
+    )
 
     class Meta:
         verbose_name = 'Запись'
         verbose_name_plural = 'Записи'
-        ordering = ('start',)
+        ordering = ('time',)
 
     def __str__(self) -> str:
         return (
