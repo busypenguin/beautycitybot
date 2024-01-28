@@ -57,6 +57,12 @@ def setup_dispatcher(dp):
         pattern=r'^show_master_services_in_saloon\s[0-9]+\s[0-9]+',
     ))
 
+    # show_days callback
+    dp.add_handler(CallbackQueryHandler(
+        handlers.show_days,
+        pattern=r'^show_days\s[0-9]+',
+    ))
+
     # catch phone number
     dp.add_handler(MessageHandler(
         Filters.regex("(^[+0-9]{1,3})*([0-9]{10,11}$)"),
