@@ -200,6 +200,25 @@ def show_master_saloons(update, context):
     )
 
 
+def show_master_services_in_saloon(update, context):
+    """Показать услуги, которые оказывает мастер в определенном салоне."""
+    master_id = update.callback_query.data.split()[1]
+    saloon_id = update.callback_query.data.split()[2]
+    services = Service.objects.filter(masters=master_id, saloons=saloon_id)
+    keyboard = [
+        [InlineKeyboardButton(
+            service.name,
+            callback_data='show_date'
+        )] for service in services
+    ]
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text=f'Услуги мастера {Master.objects.get(id=master_id)} '
+             f'в салоне {Saloon.objects.get(id=saloon_id)}:',
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
 # prices
 def show_prices(update, context):
     """Показать цены на все услуги сети."""
