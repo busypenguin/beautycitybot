@@ -1,4 +1,9 @@
-from telegram.ext import CommandHandler, CallbackQueryHandler
+from telegram.ext import (
+    CommandHandler,
+    CallbackQueryHandler,
+    MessageHandler,
+    Filters,
+)
 from . import handlers
 
 
@@ -50,6 +55,12 @@ def setup_dispatcher(dp):
     dp.add_handler(CallbackQueryHandler(
         handlers.show_master_services_in_saloon,
         pattern=r'^show_master_services_in_saloon\s[0-9]+\s[0-9]+',
+    ))
+
+    # catch phone number
+    dp.add_handler(MessageHandler(
+        Filters.regex("(^[+0-9]{1,3})*([0-9]{10,11}$)"),
+        handlers.registration_success,
     ))
 
     # any callback

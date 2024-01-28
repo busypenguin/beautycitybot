@@ -1,7 +1,7 @@
 from datetime import datetime, time, timedelta
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-from saloons.models import Master, Saloon, Service
+from saloons.models import Client, Master, Saloon, Service, Sign
 
 
 def callback_handler(update, context):
@@ -17,6 +17,7 @@ def callback_handler(update, context):
         'show_prices': show_prices,
         'show_days': show_days,
         'show_hours': show_hours,
+        'ask_phone_number': ask_phone_number,
     }
     COMMANDS[update.callback_query.data](update, context)
 
@@ -35,6 +36,24 @@ def create_keyboard(queryset):
 # start
 def start_callback(update, context):
     """Стартовый вопрос."""
+    global client_choices
+    client_choices = {
+        'username': update.message.from_user['username'],
+        'user_id': update.message.from_user['id'],
+        'first_name': update.message.from_user['first_name'],
+        'phone_number': None,
+        'saloon_id': None,
+        'master_id': None,
+        'service_id': None,
+        'date': None,
+        'time': None,
+    }
+
+    Client.objects.get_or_create(
+            username=client_choices['username'],
+            first_name=client_choices['first_name'],
+        )
+    # new_client.save()
     update.message.reply_text(
         "Добро пожаловать в салон BeautyCity!\n" +
         "Выберите как вы хотите записаться на процедуру.",
@@ -160,6 +179,7 @@ def show_services(update, context):
 def show_saloon_services(update, context):
     """Показать услуги доступные в салоне."""
     saloon_id = update.callback_query.data.split()[1]
+    client_choices['saloon_id'] = saloon_id
     saloon_services = Service.objects.filter(saloons=saloon_id)
     price_list = '\n'.join(
         f'{service.name} - {service.price}р.' for service in saloon_services)
@@ -188,6 +208,7 @@ def show_saloon_services(update, context):
 def show_master_saloons(update, context):
     """Показать салоны в которых работает мастер."""
     master_id = update.callback_query.data.split()[1]
+    client_choices['master_id'] = master_id
     master_saloons = Saloon.objects.filter(saloon_masters=master_id)
     keyboard = [
         [InlineKeyboardButton(
@@ -207,6 +228,8 @@ def show_master_services_in_saloon(update, context):
     """Показать услуги, которые оказывает мастер в определенном салоне."""
     master_id = update.callback_query.data.split()[1]
     saloon_id = update.callback_query.data.split()[2]
+    client_choices['master_id'] = master_id
+    client_choices['saloon_id'] = saloon_id
     services = Service.objects.filter(masters=master_id, saloons=saloon_id)
     keyboard = [
         [InlineKeyboardButton(
@@ -266,7 +289,7 @@ def show_days(update, context):
 
 
 def show_hours(update, context):
-    hours = [time(i) for i in range(9, 22)]
+    hours = [time(i) for i in range(9, 21)]
     keyboard = [
         [InlineKeyboardButton(
             (f'{hour.strftime("%H:%M")}-'
@@ -283,8 +306,25 @@ def show_hours(update, context):
 
 # registration
 def ask_phone_number(update, context):
-    update.message.reply_text("Введите номер телефона:")
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Введите номер телефона",
+    )
 
 
 def registration_success(update, context):
-    update.message.reply_text("Вы успешно записаны на процедуру!")
+    client_choices['phone_number'] = update.message.text
+    current_user = Client.objects.get(username=client_choices['username'])
+    Client.objects.filter(
+        username=client_choices['username']
+    ).update(phone_number=client_choices['phone_number'])
+    new_sign = Sign.objects.create(
+        saloon=Saloon.objects.get(id=client_choices['saloon_id']),
+        master=Master.objects.get(id=client_choices['master_id']),
+        client=current_user,
+    )
+    new_sign.save()
+    context.bot.send_message(
+        chat_id=update.effective_chat.id,
+        text="Вы успешно записаны на процедуру!",
+    )
